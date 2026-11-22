@@ -44,3 +44,37 @@ logic (`passed`, re-arm, crossings) from its `battery.py`. README has the rules 
 | `.../switch.py` `button.py` | Per-player switch and test buttons, on the player's device. |
 | `tests/test_sounds.py` | Grid sounds, window, switch, flows. |
 | `tests/test_levels.py` | Battery levels and their sounds. |
+
+## History (moved from grid_load_shedding's AGENTS.md, 2026-11-22)
+
+Written when the sounds were part of grid_load_shedding; entity ids and versions there are grid_load_shedding's.
+The sound files' sources moved here too: `scripts/make_battery_sounds.sh` and `sounds/battery-alpha/`.
+
+- **Sound notifications (v0.4.0, 2026-10-07)**: subentry «VLC-TELNET» on `media_player.vlc_telnet` (VLC add-on
+  `core_vlc`, output = analog jack `rk3528-acodec`, a small speaker is plugged in). Sounds (since 2026-10-07)
+  `media-source://media_source/local/grid_lost_ostap_6.mp3` / `grid_restored_polina_8.mp3`, the only files in
+  `/var/lib/homeassistant/media/`. Each one is a synthesized three-strike bell chime (lost: descending tritone
+  dyads, dark; restored: ascending major arpeggio, bright) followed by an edge-tts voice (uk-UA Ostap / Polina,
+  rate +10%): «Електрика пропала.» / «Електрика повернулась.». Chime and voice were loudness-matched by EBU R128
+  LUFS, but on this small speaker Polina still sounds quieter, so the restored file is deliberately hotter
+  (−15.2 vs −19.6 LUFS, peak −0.4 dBFS: no headroom left). The user chose to leave it as is. Volume 80 % (was 50 %, confirmed
+  audible), window 11:00–22:00. Entities: `switch.vitalnia_vlc_telnet_sound_notifications`,
+  `button.vitalnia_vlc_telnet_test_sound_grid_{lost,restored}`. VLC has no `MEDIA_ANNOUNCE`; the integration
+  calls `volume_set` before each `play_media`. `vlc_telnet` sends `volume_level * 500` but aiovlc accepts only 0..499, so 1.0 fails: the announcer caps it at 0.99, and
+  a failed `volume_set` no longer stops the sound. Both test sounds confirmed audible. The speaker is powered from
+  an inverter-backed outlet, so it keeps working through an outage (except after the battery is empty and the
+  inverter has shut down). Not yet heard on a real outage.
+
+- **Battery sounds (v0.5.0, live since 2026-11-03)**: the battery is one percentage entity, an abstraction on purpose
+  (the user may pick a phone): no power, capacity or voltage. Live: `sensor.batareia_state_of_charge`, reserve 0 % (until 2026-11-16; now the Deye's SOC, floor = Deye's shutdown SOC since v0.11.0), the six
+  `media_source/local/battery_*_ostap.mp3` files (from `sounds/battery-alpha/`) on «VLC-TELNET», battery volume 80 %
+  (the grid sounds are also at 80 % now). Entities `sensor.merezha_battery_runtime`,
+  `button.vitalnia_vlc_telnet_test_sound_battery_*`. All six test buttons played (VLC at 0.8, no errors) during the
+  2026-11-03 outage; not yet heard from a real level crossing.
+  - The rate comes from segments of a 1-point fall, not from every state: `battery_soc` updates in ticks, so single 0.1 %
+    steps kept the median at 18 %/h with a real 21 %/h.
+  - Replay of real history through `BatteryMonitor`, reserve 0 (the user's choice, 2026-11-03): 11-02 gave half 10:59, 2 h
+    11:45, quarter 12:18, 1 h 13:08, 10 min 13:20; 10-30 gave half 20:33, 2 h 20:53, quarter 21:48, 10 min 22:01. So 30 min
+    (and on 10-30 also 1 h) never played. The battery died with 12–22 % shown, `battery_soc` then jumped to 0, and that jump
+    plays only "10 min". The inverter switched off about 10 min after it (13:31, 22:11). Reserve 15 % plays all levels on both days.
+
