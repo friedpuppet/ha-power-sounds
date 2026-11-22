@@ -11,7 +11,7 @@ CONF_SOC_ENTITY: Final = "soc_entity"  # sensor, battery charge in %
 CONF_RUNTIME_ENTITY: Final = "runtime_entity"  # Battery Monitor's time left, minutes
 CONF_STATE_ENTITY: Final = "state_entity"  # Battery Monitor's state; levels only while it is DISCHARGING
 BATTERY_INPUTS: Final = (CONF_SOC_ENTITY, CONF_RUNTIME_ENTITY, CONF_STATE_ENTITY)
-DISCHARGING: Final = "discharging"
+DISCHARGING: Final = "discharging"  # must match battery_monitor's state value (its monitor.DISCHARGING)
 
 # Player subentries
 SUBENTRY_PLAYER: Final = "player"

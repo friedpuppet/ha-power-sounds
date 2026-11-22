@@ -19,7 +19,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.util import dt as dt_util
 
-from .const import BATTERY_LEVELS, EVENT_LOST, EVENT_RESTORED
+from .const import BATTERY_LEVELS, DEFAULT_VOLUME, EVENT_LOST, EVENT_RESTORED
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ class Player:
     sounds: dict[str, dict[str, str]]  # event (grid or battery level) -> media content id/type
     volume: float  # 0..1
     window: tuple[time, time] | None = None  # local start, end; may cross midnight
-    battery_volume: float = 0.5  # 0..1, for the battery levels
+    battery_volume: float = DEFAULT_VOLUME / 100  # 0..1, for the battery levels
 
 
 class Announcer:

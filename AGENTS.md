@@ -7,7 +7,7 @@ logic (`passed`, re-arm, crossings) from its `battery.py`. README has the rules 
 
 ## Status
 
-- **v0.1.0 released and live 2026-11-22.** Repo **[friedpuppet/ha-power-sounds](https://github.com/friedpuppet/ha-power-sounds)**
+- **v0.1.3 live 2026-11-22** (releases below; v0.1.0 the first, the same day). Repo **[friedpuppet/ha-power-sounds](https://github.com/friedpuppet/ha-power-sounds)**
   (public, created by the user), pushed and released with the PAT `~/.config/github/token-grid-load-shedding`
   (same push command as `../battery-monitor/AGENTS.md`). Marketplace repo id **`1467926077`**; first install needed
   no restart, updates do (WS `marketplace/repository/install`).
@@ -24,7 +24,8 @@ logic (`passed`, re-arm, crossings) from its `battery.py`. README has the rules 
   `sensor.monitor_batarei_state`, so the levels count only while discharging.
 - v0.1.2 (2026-11-22, the user: «working with any battery makes no sense now»): the battery inputs are Battery
   Monitor's set, all three (charge, time left, state) or none; the flows reject a partial set. No more SOC-only mode.
-- Same conventions as `../grid-load-shedding/`. The brand icon is a copy of grid_load_shedding's for now.
+- v0.1.3 (2026-11-22, the project review): no behaviour change; the default battery volume comes from `DEFAULT_VOLUME`.
+- Same conventions as `../grid-load-shedding/`; each release bumps both `manifest.json` and `pyproject.toml`. The brand icon is a copy of grid_load_shedding's for now.
 
 ## Differences from grid_load_shedding's sounds (on purpose)
 
@@ -46,6 +47,8 @@ logic (`passed`, re-arm, crossings) from its `battery.py`. README has the rules 
 | `.../switch.py` `button.py` | Per-player switch and test buttons, on the player's device. |
 | `tests/test_sounds.py` | Grid sounds, window, switch, flows. |
 | `tests/test_levels.py` | Battery levels and their sounds. |
+| `tests/test_config_flow.py` | Entry and options flows, the battery input set. |
+| `scripts/make_battery_sounds.sh` | Generates the battery mp3s (chime + voice, same loudness as the grid sounds). |
 
 ## History (moved from grid_load_shedding's AGENTS.md, 2026-11-22)
 
@@ -68,7 +71,7 @@ The sound files' sources moved here too: `scripts/make_battery_sounds.sh` and `s
   inverter has shut down). Not yet heard on a real outage.
 
 - **Battery sounds (v0.5.0, live since 2026-11-03)**: the battery is one percentage entity, an abstraction on purpose
-  (the user may pick a phone): no power, capacity or voltage. Live: `sensor.batareia_state_of_charge`, reserve 0 % (until 2026-11-16; now the Deye's SOC, floor = Deye's shutdown SOC since v0.11.0), the six
+  (the user may pick a phone): no power, capacity or voltage. Live: `sensor.batareia_state_of_charge`, reserve 0 % (until 2026-11-16; now the Deye's SOC, floor = Deye's shutdown SOC since v0.11.0), the six (four since v0.6.0)
   `media_source/local/battery_*_ostap.mp3` files (from `sounds/battery-alpha/`) on «VLC-TELNET», battery volume 80 %
   (the grid sounds are also at 80 % now). Entities `sensor.merezha_battery_runtime`,
   `button.vitalnia_vlc_telnet_test_sound_battery_*`. All six test buttons played (VLC at 0.8, no errors) during the
