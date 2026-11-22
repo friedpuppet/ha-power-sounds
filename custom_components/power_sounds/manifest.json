@@ -1,0 +1,14 @@
+{
+  "domain": "power_sounds",
+  "name": "Power Sounds",
+  "codeowners": [
+    "@friedpuppet"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/friedpuppet/ha-power-sounds",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/friedpuppet/ha-power-sounds/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

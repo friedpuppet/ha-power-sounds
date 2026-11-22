@@ -1,0 +1,164 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Power Sounds",
+        "data": {
+          "name": "Name",
+          "grid_entity": "Grid",
+          "soc_entity": "Battery charge",
+          "runtime_entity": "Battery time left"
+        },
+        "data_description": {
+          "grid_entity": "Optional. A binary sensor that is on while the flat runs from the grid. Grid lost = on → off, restored = off → on; unavailable in between says nothing.",
+          "soc_entity": "Optional. Battery charge in %, for the half and quarter charge sounds.",
+          "runtime_entity": "Optional. Battery time left in minutes (e.g. Battery Monitor's Time left), for the 2 hours and 30 minutes sounds. Needs the charge too."
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "grid_entity": "Grid",
+          "soc_entity": "Battery charge",
+          "runtime_entity": "Battery time left"
+        },
+        "data_description": {
+          "grid_entity": "Optional. A binary sensor that is on while the flat runs from the grid. Grid lost = on → off, restored = off → on; unavailable in between says nothing.",
+          "soc_entity": "Optional. Battery charge in %, for the half and quarter charge sounds.",
+          "runtime_entity": "Optional. Battery time left in minutes (e.g. Battery Monitor's Time left), for the 2 hours and 30 minutes sounds. Needs the charge too."
+        }
+      }
+    }
+  },
+  "config_subentries": {
+    "player": {
+      "entry_type": "Player",
+      "initiate_flow": {
+        "user": "Add player",
+        "reconfigure": "Reconfigure"
+      },
+      "step": {
+        "user": {
+          "title": "Add player",
+          "description": "Play sounds on this media player: grid lost and restored, battery levels. Upload your own audio files in Media → Local media.",
+          "data": {
+            "media_player": "Media player",
+            "sound_lost": "Sound: grid lost",
+            "sound_restored": "Sound: grid restored",
+            "volume": "Volume",
+            "window_start": "Play from",
+            "window_end": "Play until",
+            "enabled": "Sound notifications",
+            "battery_volume": "Battery sounds volume",
+            "sound_soc_50": "Sound: battery half charge",
+            "sound_soc_25": "Sound: battery quarter charge",
+            "sound_runtime_120": "Sound: battery 2 hours left",
+            "sound_runtime_30": "Sound: battery 30 minutes left"
+          },
+          "data_description": {
+            "sound_lost": "Optional. Without a sound, grid loss is not announced.",
+            "sound_restored": "Optional. Without a sound, the grid's return is not announced.",
+            "volume": "Set on the player right before each sound.",
+            "window_start": "Sounds play only inside this window (local time); outside it they are skipped, e.g. to keep the night quiet. Leave both empty to play at any time.",
+            "window_end": "May be earlier than the start (window crosses midnight).",
+            "enabled": "Also available as a switch on the player's device.",
+            "battery_volume": "Set on the player right before each battery sound, separately from the grid sounds.",
+            "sound_soc_50": "Optional. Needs a charge sensor in the integration options (the time-left levels also a time-left sensor). Each level plays once per discharge, in the same window as the grid sounds, with or without the grid.",
+            "sound_soc_25": "Optional. Needs a charge sensor in the integration options (the time-left levels also a time-left sensor). Each level plays once per discharge, in the same window as the grid sounds, with or without the grid.",
+            "sound_runtime_120": "Optional. Needs a charge sensor in the integration options (the time-left levels also a time-left sensor). Each level plays once per discharge, in the same window as the grid sounds, with or without the grid.",
+            "sound_runtime_30": "Optional. Needs a charge sensor in the integration options (the time-left levels also a time-left sensor). Each level plays once per discharge, in the same window as the grid sounds, with or without the grid."
+          }
+        },
+        "reconfigure": {
+          "title": "Sound notification settings",
+          "description": "Settings for {player}. Clear both window times to play at any time.",
+          "data": {
+            "sound_lost": "Sound: grid lost",
+            "sound_restored": "Sound: grid restored",
+            "volume": "Volume",
+            "window_start": "Play from",
+            "window_end": "Play until",
+            "enabled": "Sound notifications",
+            "battery_volume": "Battery sounds volume",
+            "sound_soc_50": "Sound: battery half charge",
+            "sound_soc_25": "Sound: battery quarter charge",
+            "sound_runtime_120": "Sound: battery 2 hours left",
+            "sound_runtime_30": "Sound: battery 30 minutes left"
+          },
+          "data_description": {
+            "sound_lost": "Optional. Without a sound, grid loss is not announced.",
+            "sound_restored": "Optional. Without a sound, the grid's return is not announced.",
+            "volume": "Set on the player right before each sound.",
+            "window_start": "Sounds play only inside this window (local time); outside it they are skipped, e.g. to keep the night quiet. Leave both empty to play at any time.",
+            "window_end": "May be earlier than the start (window crosses midnight).",
+            "enabled": "Also available as a switch on the player's device.",
+            "battery_volume": "Set on the player right before each battery sound, separately from the grid sounds.",
+            "sound_soc_50": "Optional. Needs a charge sensor in the integration options (the time-left levels also a time-left sensor). Each level plays once per discharge, in the same window as the grid sounds, with or without the grid.",
+            "sound_soc_25": "Optional. Needs a charge sensor in the integration options (the time-left levels also a time-left sensor). Each level plays once per discharge, in the same window as the grid sounds, with or without the grid.",
+            "sound_runtime_120": "Optional. Needs a charge sensor in the integration options (the time-left levels also a time-left sensor). Each level plays once per discharge, in the same window as the grid sounds, with or without the grid.",
+            "sound_runtime_30": "Optional. Needs a charge sensor in the integration options (the time-left levels also a time-left sensor). Each level plays once per discharge, in the same window as the grid sounds, with or without the grid."
+          }
+        }
+      },
+      "error": {
+        "already_configured": "This media player is already added.",
+        "window_incomplete": "Set both the start and the end of the window, or neither.",
+        "window_empty": "The window start and end must differ."
+      },
+      "abort": {
+        "reconfigure_successful": "The player was updated."
+      }
+    }
+  },
+  "entity": {
+    "button": {
+      "test_sound_lost": {
+        "name": "Test sound: grid lost"
+      },
+      "test_sound_lost_named": {
+        "name": "Test sound on {player}: grid lost"
+      },
+      "test_sound_restored": {
+        "name": "Test sound: grid restored"
+      },
+      "test_sound_restored_named": {
+        "name": "Test sound on {player}: grid restored"
+      },
+      "test_sound_soc_50": {
+        "name": "Test sound: battery half charge"
+      },
+      "test_sound_soc_50_named": {
+        "name": "Test sound on {player}: battery half charge"
+      },
+      "test_sound_soc_25": {
+        "name": "Test sound: battery quarter charge"
+      },
+      "test_sound_soc_25_named": {
+        "name": "Test sound on {player}: battery quarter charge"
+      },
+      "test_sound_runtime_120": {
+        "name": "Test sound: battery 2 hours left"
+      },
+      "test_sound_runtime_120_named": {
+        "name": "Test sound on {player}: battery 2 hours left"
+      },
+      "test_sound_runtime_30": {
+        "name": "Test sound: battery 30 minutes left"
+      },
+      "test_sound_runtime_30_named": {
+        "name": "Test sound on {player}: battery 30 minutes left"
+      }
+    },
+    "switch": {
+      "announce": {
+        "name": "Sound notifications"
+      },
+      "announce_named": {
+        "name": "Sound notifications on {player}"
+      }
+    }
+  }
+}
