@@ -15,6 +15,7 @@ from custom_components.power_sounds.const import (
     CONF_MEDIA_PLAYER,
     CONF_RUNTIME_ENTITY,
     CONF_SOC_ENTITY,
+    CONF_STATE_ENTITY,
     DOMAIN,
     SUBENTRY_PLAYER,
 )
@@ -22,6 +23,7 @@ from custom_components.power_sounds.const import (
 GRID = "binary_sensor.grid"
 SOC = "sensor.battery"
 RUNTIME = "sensor.battery_time_left"
+STATE = "sensor.battery_state"
 
 
 @pytest.fixture(autouse=True)
@@ -34,7 +36,13 @@ def make_entry(options: dict[str, Any] | None = None, players: tuple[dict[str, A
         domain=DOMAIN,
         title="Sounds",
         data={},
-        options={CONF_GRID_ENTITY: GRID, CONF_SOC_ENTITY: SOC, CONF_RUNTIME_ENTITY: RUNTIME, **(options or {})},
+        options={
+            CONF_GRID_ENTITY: GRID,
+            CONF_SOC_ENTITY: SOC,
+            CONF_RUNTIME_ENTITY: RUNTIME,
+            CONF_STATE_ENTITY: STATE,
+            **(options or {}),
+        },
         subentries_data=[
             ConfigSubentryData(
                 data=data,

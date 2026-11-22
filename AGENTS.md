@@ -22,6 +22,8 @@ logic (`passed`, re-arm, crossings) from its `battery.py`. README has the rules 
   Not yet heard: a test button or a real event (switched over after the window closed).
 - v0.1.1 (2026-11-22, the user's question «why not the monitor's state?»): optional Battery state entity; live
   `sensor.monitor_batarei_state`, so the levels count only while discharging.
+- v0.1.2 (2026-11-22, the user: «working with any battery makes no sense now»): the battery inputs are Battery
+  Monitor's set, all three (charge, time left, state) or none; the flows reject a partial set. No more SOC-only mode.
 - Same conventions as `../grid-load-shedding/`. The brand icon is a copy of grid_load_shedding's for now.
 
 ## Differences from grid_load_shedding's sounds (on purpose)

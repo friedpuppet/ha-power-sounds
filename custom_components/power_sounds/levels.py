@@ -1,7 +1,7 @@
-"""Battery levels: each crossed once per discharge, from a charge sensor and a time-left sensor.
+"""Battery levels: each crossed once per discharge, from the charge and Battery Monitor's sensors.
 
-With a state entity (e.g. Battery Monitor's state), levels are only checked while it is
-``discharging``, so a jitter of the charge on an idle battery says nothing.
+Levels are only checked while Battery Monitor's state is ``discharging``, so a jitter of the charge
+on an idle battery says nothing; a level crossed meanwhile is said when the discharge starts.
 A charge level is crossed when the charge falls below it; a time-left level when the time left is at
 or under it. A level comes back only after ``REARM_PERCENT`` points of real charging, so a short blink
 of the grid or a jitter of the estimate repeats nothing. If several are crossed together, only the
@@ -44,9 +44,9 @@ class LevelTracker:
         entry_id: str,
         *,
         soc_entity: str,
-        runtime_entity: str | None,
+        runtime_entity: str,
+        state_entity: str,
         on_level: Callable[[str], None],
-        state_entity: str | None = None,
     ) -> None:
         self.hass = hass
         self.soc_entity = soc_entity
@@ -61,11 +61,6 @@ class LevelTracker:
         self._unsubs: list[CALLBACK_TYPE] = []
         self._store: Store[dict] = Store(hass, STORAGE_VERSION, f"{DOMAIN}.{entry_id}.levels")
 
-    @property
-    def levels(self) -> tuple[str, ...]:
-        """The levels this tracker can report: time left only with a time-left sensor."""
-        return tuple(level for level in BATTERY_LEVELS if level in SOC_LEVELS or self.runtime_entity)
-
     async def async_load(self) -> None:
         data = await self._store.async_load()
         self._first_start = data is None
@@ -76,15 +71,14 @@ class LevelTracker:
     @callback
     def async_start(self) -> None:
         self.soc = _number(self.hass.states.get(self.soc_entity))
-        if self.runtime_entity:
-            self.runtime = _number(self.hass.states.get(self.runtime_entity))
+        self.runtime = _number(self.hass.states.get(self.runtime_entity))
         if self._first_start:
             self.passed = set(self._crossed())
             self._low = self.soc
             self._save()
         elif self.soc is not None:
             self._rearm(self.soc)
-        entities = [self.soc_entity] + [e for e in (self.runtime_entity, self.state_entity) if e]
+        entities = [self.soc_entity, self.runtime_entity, self.state_entity]
         self._unsubs.append(async_track_state_change_event(self.hass, entities, self._async_changed))
 
     @callback
@@ -124,15 +118,13 @@ class LevelTracker:
 
     @property
     def discharging(self) -> bool:
-        """True without a state entity; with one, only while it says discharging."""
-        if not self.state_entity:
-            return True
+        """Battery Monitor's state says discharging."""
         state = self.hass.states.get(self.state_entity)
         return state is not None and state.state == DISCHARGING
 
     def _crossed(self) -> list[str]:
         crossed = []
-        for level in self.levels:
+        for level in BATTERY_LEVELS:
             if level in self.passed:
                 continue
             if level in SOC_LEVELS:

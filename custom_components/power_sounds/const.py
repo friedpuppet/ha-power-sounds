@@ -6,10 +6,12 @@ DOMAIN: Final = "power_sounds"
 
 # Entry options: the inputs
 CONF_GRID_ENTITY: Final = "grid_entity"  # binary_sensor, on while the flat runs from the grid, optional
-CONF_SOC_ENTITY: Final = "soc_entity"  # sensor, battery charge in %, optional
-CONF_RUNTIME_ENTITY: Final = "runtime_entity"  # sensor, battery time left in minutes, optional
-CONF_STATE_ENTITY: Final = "state_entity"  # sensor, battery state; levels only while it is DISCHARGING, optional
-DISCHARGING: Final = "discharging"  # Battery Monitor's state while discharging
+# The battery: all three or none (Battery Monitor's sensors and the charge they are computed from)
+CONF_SOC_ENTITY: Final = "soc_entity"  # sensor, battery charge in %
+CONF_RUNTIME_ENTITY: Final = "runtime_entity"  # Battery Monitor's time left, minutes
+CONF_STATE_ENTITY: Final = "state_entity"  # Battery Monitor's state; levels only while it is DISCHARGING
+BATTERY_INPUTS: Final = (CONF_SOC_ENTITY, CONF_RUNTIME_ENTITY, CONF_STATE_ENTITY)
+DISCHARGING: Final = "discharging"
 
 # Player subentries
 SUBENTRY_PLAYER: Final = "player"

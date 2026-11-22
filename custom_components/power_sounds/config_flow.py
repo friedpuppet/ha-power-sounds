@@ -20,6 +20,7 @@ from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er, selector
 
 from .const import (
+    BATTERY_INPUTS,
     BATTERY_LEVELS,
     CONF_BATTERY_VOLUME,
     CONF_ENABLED,
@@ -63,19 +64,28 @@ def _options_schema(defaults: dict[str, Any]) -> vol.Schema:
     )
 
 
+def _battery_errors(user_input: dict[str, Any]) -> dict[str, str]:
+    """The battery inputs come as a set: all three or none."""
+    given = [bool(user_input.get(key)) for key in BATTERY_INPUTS]
+    return {"base": "battery_incomplete"} if any(given) and not all(given) else {}
+
+
 class PowerSoundsConfigFlow(ConfigFlow, domain=DOMAIN):
     """One entry per set of inputs (grid, battery); players are subentries."""
 
     VERSION = 1
 
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
-        if user_input is not None:
-            name = user_input.pop(CONF_NAME)
-            return self.async_create_entry(title=name, data={}, options=user_input)
-        schema = vol.Schema({vol.Required(CONF_NAME, default="Power sounds"): selector.TextSelector()}).extend(
-            _options_schema({}).schema
-        )
-        return self.async_show_form(step_id="user", data_schema=schema)
+        errors: dict[str, str] = {}
+        if user_input is not None and not (errors := _battery_errors(user_input)):
+            options = dict(user_input)
+            name = options.pop(CONF_NAME)
+            return self.async_create_entry(title=name, data={}, options=options)
+        defaults = user_input or {}
+        schema = vol.Schema(
+            {vol.Required(CONF_NAME, default=defaults.get(CONF_NAME, "Power sounds")): selector.TextSelector()}
+        ).extend(_options_schema(defaults).schema)
+        return self.async_show_form(step_id="user", data_schema=schema, errors=errors)
 
     @staticmethod
     @callback
@@ -92,9 +102,11 @@ class PowerSoundsOptionsFlow(OptionsFlow):
     """Change the input entities (the entry reloads afterwards)."""
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
-        if user_input is not None:
+        errors: dict[str, str] = {}
+        if user_input is not None and not (errors := _battery_errors(user_input)):
             return self.async_create_entry(data=user_input)
-        return self.async_show_form(step_id="init", data_schema=_options_schema(dict(self.config_entry.options)))
+        defaults = user_input or dict(self.config_entry.options)
+        return self.async_show_form(step_id="init", data_schema=_options_schema(defaults), errors=errors)
 
 
 _BATTERY_SOUNDS = tuple(f"sound_{level}" for level in reversed(BATTERY_LEVELS))

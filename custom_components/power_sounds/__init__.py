@@ -49,14 +49,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: PowerSoundsConfigEntry) 
     opts = entry.options
     announcer = Announcer(hass, opts.get(CONF_GRID_ENTITY) or None)
     levels: LevelTracker | None = None
-    if soc_entity := opts.get(CONF_SOC_ENTITY):
+    if opts.get(CONF_SOC_ENTITY):  # the config flow allows all three battery inputs or none
         levels = LevelTracker(
             hass,
             entry.entry_id,
-            soc_entity=soc_entity,
-            runtime_entity=opts.get(CONF_RUNTIME_ENTITY) or None,
+            soc_entity=opts[CONF_SOC_ENTITY],
+            runtime_entity=opts[CONF_RUNTIME_ENTITY],
+            state_entity=opts[CONF_STATE_ENTITY],
             on_level=announcer.async_battery_level,
-            state_entity=opts.get(CONF_STATE_ENTITY) or None,
         )
         await levels.async_load()
 

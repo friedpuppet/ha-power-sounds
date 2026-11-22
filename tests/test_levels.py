@@ -10,11 +10,13 @@ from custom_components.power_sounds.const import (
     BATTERY_LEVELS,
     CONF_BATTERY_VOLUME,
     CONF_RUNTIME_ENTITY,
+    CONF_SOC_ENTITY,
+    CONF_STATE_ENTITY,
     DOMAIN,
 )
 from custom_components.power_sounds.levels import LevelTracker
 
-from .conftest import GRID, RUNTIME, SOC, make_entry, setup_entry
+from .conftest import GRID, RUNTIME, SOC, STATE, make_entry, setup_entry
 from .test_sounds import ANNOUNCEMENT, PLAYER, Player, at
 
 SOUNDS = {
@@ -26,8 +28,11 @@ SOUNDS = {
 async def start(hass: HomeAssistant, soc: float, runtime: float | None = None) -> tuple[LevelTracker, list[str]]:
     hass.states.async_set(SOC, str(soc))
     hass.states.async_set(RUNTIME, "unknown" if runtime is None else str(runtime))
+    hass.states.async_set(STATE, "discharging")
     levels: list[str] = []
-    tracker = LevelTracker(hass, "e", soc_entity=SOC, runtime_entity=RUNTIME, on_level=levels.append)
+    tracker = LevelTracker(
+        hass, "e", soc_entity=SOC, runtime_entity=RUNTIME, state_entity=STATE, on_level=levels.append
+    )
     await tracker.async_load()
     tracker.async_start()
     return tracker, levels
@@ -136,23 +141,12 @@ async def test_passed_survive_a_restart(hass: HomeAssistant) -> None:
     again.async_stop()
 
 
-async def test_without_a_time_left_sensor(hass: HomeAssistant) -> None:
-    hass.states.async_set(SOC, "60")
-    levels: list[str] = []
-    tracker = LevelTracker(hass, "e", soc_entity=SOC, runtime_entity=None, on_level=levels.append)
-    await tracker.async_load()
-    tracker.async_start()
-    assert tracker.levels == ("soc_25", "soc_50")
-    await discharge(hass, 60, 1)
-    assert levels == ["soc_50", "soc_25"]
-    tracker.async_stop()
-
-
 async def setup(hass: HomeAssistant, soc: float, **options):
     hass.states.async_set(PLAYER, "idle")
     hass.states.async_set(GRID, "on")
     hass.states.async_set(SOC, str(soc))
     hass.states.async_set(RUNTIME, "unknown")
+    hass.states.async_set(STATE, "discharging")
     player = Player(hass)
     entry = make_entry(options=options, players=({**ANNOUNCEMENT, **SOUNDS, CONF_BATTERY_VOLUME: 70},))
     await setup_entry(hass, entry)
@@ -197,24 +191,20 @@ async def test_test_buttons(hass: HomeAssistant, freezer: FrozenDateTimeFactory)
     assert all(c["service_data"]["volume_level"] == 0.7 for c in player.calls if c["service"] == "volume_set")
 
 
-async def test_no_time_left_buttons_without_the_sensor(hass: HomeAssistant) -> None:
-    entry, _ = await setup(hass, 90, **{CONF_RUNTIME_ENTITY: None})
+async def test_no_battery_buttons_without_the_battery(hass: HomeAssistant) -> None:
+    entry, _ = await setup(hass, 90, **{CONF_SOC_ENTITY: None, CONF_RUNTIME_ENTITY: None, CONF_STATE_ENTITY: None})
+    assert entry.runtime_data.levels is None
     sub_id = next(iter(entry.subentries))
     reg = er.async_get(hass)
-    assert reg.async_get_entity_id("button", DOMAIN, f"{sub_id}_test_sound_soc_50")
-    assert not reg.async_get_entity_id("button", DOMAIN, f"{sub_id}_test_sound_runtime_30")
+    assert reg.async_get_entity_id("button", DOMAIN, f"{sub_id}_test_sound_lost")
+    assert not reg.async_get_entity_id("button", DOMAIN, f"{sub_id}_test_sound_soc_50")
 
 
-async def test_only_while_discharging_with_a_state_entity(hass: HomeAssistant) -> None:
-    state = "sensor.battery_state"
-    hass.states.async_set(SOC, "51")
+async def test_only_while_discharging(hass: HomeAssistant) -> None:
+    state = STATE
+    tracker, levels = await start(hass, 51)
     hass.states.async_set(state, "idle")
-    levels: list[str] = []
-    tracker = LevelTracker(
-        hass, "e", soc_entity=SOC, runtime_entity=RUNTIME, on_level=levels.append, state_entity=state
-    )
-    await tracker.async_load()
-    tracker.async_start()
+    await hass.async_block_till_done()
     await step(hass, 49.9)  # an idle battery's charge jitters: nothing
     assert levels == []
     hass.states.async_set(state, "discharging")  # a real discharge starts below the level: said now

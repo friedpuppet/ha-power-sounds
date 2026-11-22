@@ -1,20 +1,18 @@
 # Power Sounds
 
-Home Assistant integration: play sounds on media players when the grid is lost or comes back, and when a battery
-crosses a level (half or quarter charge, 2 hours or 30 minutes left). It only watches entities picked in its options,
-so the grid can come from any binary sensor and the battery from any charge and time-left sensors (e.g.
-[Battery Monitor](https://github.com/friedpuppet/ha-battery-monitor)).
+Home Assistant integration: play sounds on media players when the grid is lost or comes back, and when the battery
+crosses a level (half or quarter charge, 2 hours or 30 minutes left). The battery side works with
+[Battery Monitor](https://github.com/friedpuppet/ha-battery-monitor)'s sensors.
 
 ## Options (the inputs)
 
 - **Grid** (optional): a binary sensor, on while the flat runs from the grid. Grid lost = on → off, restored =
   off → on. Unavailable or unknown in between (e.g. an inverter out of sight) says nothing.
-- **Battery charge** (optional): a sensor with the charge in %, for the half and quarter charge levels.
-- **Battery time left** (optional, needs the charge too): a sensor with the minutes left, for the 2 hours and
-  30 minutes levels. Unknown while the battery isn't discharging.
-- **Battery state** (optional): a sensor with the battery state (e.g. Battery Monitor's State). The battery levels are
-  then checked only while it is `discharging`: a jitter of an idle battery's charge says nothing, and a level crossed
-  meanwhile is said when the discharge starts.
+- **Battery** (optional, all three or none):
+  - **Battery charge**: the charge in % that Battery Monitor works from, for the half and quarter charge levels.
+  - **Battery time left**: Battery Monitor's Time left, for the 2 hours and 30 minutes levels.
+  - **Battery state**: Battery Monitor's State. The levels are checked only while it is `discharging`: a jitter of
+    an idle battery's charge says nothing, and a level crossed meanwhile is said when the discharge starts.
 
 ## Players
 
@@ -39,7 +37,7 @@ player right before each sound (capped at 99 %, since vlc_telnet rejects 100 %).
 | Entity | Purpose |
 |---|---|
 | `switch.<player>_sound_notifications` | The player's on/off flag. Attributes `window_start` / `window_end`. |
-| `button.<player>_test_sound_<event>` | Play that sound now, ignoring the window and the switch. One per grid event (with a grid sensor) and battery level (with the sensors it needs). |
+| `button.<player>_test_sound_<event>` | Play that sound now, ignoring the window and the switch. One per grid event (with a grid sensor) and battery level (with the battery sensors). |
 
 ## Development
 

@@ -9,7 +9,7 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from . import PowerSoundsConfigEntry
 from .announcer import Announcer, Player
-from .const import GRID_EVENTS
+from .const import BATTERY_LEVELS, GRID_EVENTS
 
 
 async def async_setup_entry(
@@ -18,7 +18,7 @@ async def async_setup_entry(
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     data = entry.runtime_data
-    events = (GRID_EVENTS if data.announcer.grid_entity else ()) + (data.levels.levels if data.levels else ())
+    events = (GRID_EVENTS if data.announcer.grid_entity else ()) + (BATTERY_LEVELS if data.levels else ())
     for player in data.announcer.players.values():
         async_add_entities(
             [TestSoundButton(hass, entry, data.announcer, player, event) for event in events],
