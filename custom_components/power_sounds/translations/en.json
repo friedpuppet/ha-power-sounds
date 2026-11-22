@@ -7,12 +7,14 @@
           "name": "Name",
           "grid_entity": "Grid",
           "soc_entity": "Battery charge",
-          "runtime_entity": "Battery time left"
+          "runtime_entity": "Battery time left",
+          "state_entity": "Battery state"
         },
         "data_description": {
           "grid_entity": "Optional. A binary sensor that is on while the flat runs from the grid. Grid lost = on → off, restored = off → on; unavailable in between says nothing.",
           "soc_entity": "Optional. Battery charge in %, for the half and quarter charge sounds.",
-          "runtime_entity": "Optional. Battery time left in minutes (e.g. Battery Monitor's Time left), for the 2 hours and 30 minutes sounds. Needs the charge too."
+          "runtime_entity": "Optional. Battery time left in minutes (e.g. Battery Monitor's Time left), for the 2 hours and 30 minutes sounds. Needs the charge too.",
+          "state_entity": "Optional. A sensor with the battery state (e.g. Battery Monitor's State). The battery levels are then checked only while it is discharging, not on a jitter of the charge of an idle battery."
         }
       }
     }
@@ -23,12 +25,14 @@
         "data": {
           "grid_entity": "Grid",
           "soc_entity": "Battery charge",
-          "runtime_entity": "Battery time left"
+          "runtime_entity": "Battery time left",
+          "state_entity": "Battery state"
         },
         "data_description": {
           "grid_entity": "Optional. A binary sensor that is on while the flat runs from the grid. Grid lost = on → off, restored = off → on; unavailable in between says nothing.",
           "soc_entity": "Optional. Battery charge in %, for the half and quarter charge sounds.",
-          "runtime_entity": "Optional. Battery time left in minutes (e.g. Battery Monitor's Time left), for the 2 hours and 30 minutes sounds. Needs the charge too."
+          "runtime_entity": "Optional. Battery time left in minutes (e.g. Battery Monitor's Time left), for the 2 hours and 30 minutes sounds. Needs the charge too.",
+          "state_entity": "Optional. A sensor with the battery state (e.g. Battery Monitor's State). The battery levels are then checked only while it is discharging, not on a jitter of the charge of an idle battery."
         }
       }
     }

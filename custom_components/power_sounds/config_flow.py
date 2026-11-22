@@ -27,6 +27,7 @@ from .const import (
     CONF_MEDIA_PLAYER,
     CONF_RUNTIME_ENTITY,
     CONF_SOC_ENTITY,
+    CONF_STATE_ENTITY,
     CONF_SOUND_LOST,
     CONF_SOUND_RESTORED,
     CONF_VOLUME,
@@ -55,6 +56,9 @@ def _options_schema(defaults: dict[str, Any]) -> vol.Schema:
             vol.Optional(
                 CONF_RUNTIME_ENTITY, description=_suggested(defaults, CONF_RUNTIME_ENTITY)
             ): selector.EntitySelector(selector.EntitySelectorConfig(domain="sensor", device_class=SensorDeviceClass.DURATION)),
+            vol.Optional(CONF_STATE_ENTITY, description=_suggested(defaults, CONF_STATE_ENTITY)): selector.EntitySelector(
+                selector.EntitySelectorConfig(domain="sensor", device_class=SensorDeviceClass.ENUM)
+            ),
         }
     )
 

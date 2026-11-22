@@ -12,6 +12,9 @@ so the grid can come from any binary sensor and the battery from any charge and 
 - **Battery charge** (optional): a sensor with the charge in %, for the half and quarter charge levels.
 - **Battery time left** (optional, needs the charge too): a sensor with the minutes left, for the 2 hours and
   30 minutes levels. Unknown while the battery isn't discharging.
+- **Battery state** (optional): a sensor with the battery state (e.g. Battery Monitor's State). The battery levels are
+  then checked only while it is `discharging`: a jitter of an idle battery's charge says nothing, and a level crossed
+  meanwhile is said when the discharge starts.
 
 ## Players
 

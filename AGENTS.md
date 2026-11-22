@@ -20,6 +20,8 @@ logic (`passed`, re-arm, crossings) from its `battery.py`. README has the rules 
   this one's `switch.vitalnia_vlc_telnet_sound_notifications_2` on. The new entities carry a `_2` suffix until
   grid_load_shedding's are removed (plan step 4); rename them then. First start took `soc_50` as passed (SOC 40 %).
   Not yet heard: a test button or a real event (switched over after the window closed).
+- v0.1.1 (2026-11-22, the user's question «why not the monitor's state?»): optional Battery state entity; live
+  `sensor.monitor_batarei_state`, so the levels count only while discharging.
 - Same conventions as `../grid-load-shedding/`. The brand icon is a copy of grid_load_shedding's for now.
 
 ## Differences from grid_load_shedding's sounds (on purpose)

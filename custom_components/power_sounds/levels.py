@@ -1,5 +1,7 @@
 """Battery levels: each crossed once per discharge, from a charge sensor and a time-left sensor.
 
+With a state entity (e.g. Battery Monitor's state), levels are only checked while it is
+``discharging``, so a jitter of the charge on an idle battery says nothing.
 A charge level is crossed when the charge falls below it; a time-left level when the time left is at
 or under it. A level comes back only after ``REARM_PERCENT`` points of real charging, so a short blink
 of the grid or a jitter of the estimate repeats nothing. If several are crossed together, only the
@@ -17,7 +19,7 @@ from homeassistant.core import CALLBACK_TYPE, Event, EventStateChangedData, Home
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.storage import Store
 
-from .const import BATTERY_LEVELS, DOMAIN, REARM_PERCENT, RUNTIME_LEVELS, SOC_LEVELS, STORAGE_VERSION
+from .const import BATTERY_LEVELS, DISCHARGING, DOMAIN, REARM_PERCENT, RUNTIME_LEVELS, SOC_LEVELS, STORAGE_VERSION
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -44,10 +46,12 @@ class LevelTracker:
         soc_entity: str,
         runtime_entity: str | None,
         on_level: Callable[[str], None],
+        state_entity: str | None = None,
     ) -> None:
         self.hass = hass
         self.soc_entity = soc_entity
         self.runtime_entity = runtime_entity
+        self.state_entity = state_entity
         self._on_level = on_level
         self.soc: float | None = None
         self.runtime: float | None = None
@@ -80,7 +84,7 @@ class LevelTracker:
             self._save()
         elif self.soc is not None:
             self._rearm(self.soc)
-        entities = [self.soc_entity] + ([self.runtime_entity] if self.runtime_entity else [])
+        entities = [self.soc_entity] + [e for e in (self.runtime_entity, self.state_entity) if e]
         self._unsubs.append(async_track_state_change_event(self.hass, entities, self._async_changed))
 
     @callback
@@ -99,6 +103,10 @@ class LevelTracker:
 
     @callback
     def _async_changed(self, event: Event[EventStateChangedData]) -> None:
+        if event.data["entity_id"] == self.state_entity:
+            if self._check():  # discharging again: a level crossed meanwhile counts now
+                self._save()
+            return
         value = _number(event.data["new_state"])
         if event.data["entity_id"] != self.soc_entity:
             self.runtime = value  # unknown while charging or idle: no stale estimate
@@ -114,6 +122,14 @@ class LevelTracker:
         if changed:
             self._save()
 
+    @property
+    def discharging(self) -> bool:
+        """True without a state entity; with one, only while it says discharging."""
+        if not self.state_entity:
+            return True
+        state = self.hass.states.get(self.state_entity)
+        return state is not None and state.state == DISCHARGING
+
     def _crossed(self) -> list[str]:
         crossed = []
         for level in self.levels:
@@ -128,7 +144,7 @@ class LevelTracker:
         return crossed
 
     def _check(self) -> bool:
-        if not (crossed := self._crossed()):
+        if not self.discharging or not (crossed := self._crossed()):
             return False
         self.passed.update(crossed)
         _LOGGER.info("Battery at %s %%, %s min left: %s", self.soc, self.runtime, crossed)

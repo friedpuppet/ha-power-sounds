@@ -8,6 +8,8 @@ DOMAIN: Final = "power_sounds"
 CONF_GRID_ENTITY: Final = "grid_entity"  # binary_sensor, on while the flat runs from the grid, optional
 CONF_SOC_ENTITY: Final = "soc_entity"  # sensor, battery charge in %, optional
 CONF_RUNTIME_ENTITY: Final = "runtime_entity"  # sensor, battery time left in minutes, optional
+CONF_STATE_ENTITY: Final = "state_entity"  # sensor, battery state; levels only while it is DISCHARGING, optional
+DISCHARGING: Final = "discharging"  # Battery Monitor's state while discharging
 
 # Player subentries
 SUBENTRY_PLAYER: Final = "player"

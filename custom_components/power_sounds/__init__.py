@@ -19,6 +19,7 @@ from .const import (
     CONF_MEDIA_PLAYER,
     CONF_RUNTIME_ENTITY,
     CONF_SOC_ENTITY,
+    CONF_STATE_ENTITY,
     CONF_SOUND_LOST,
     CONF_SOUND_RESTORED,
     CONF_VOLUME,
@@ -55,6 +56,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: PowerSoundsConfigEntry) 
             soc_entity=soc_entity,
             runtime_entity=opts.get(CONF_RUNTIME_ENTITY) or None,
             on_level=announcer.async_battery_level,
+            state_entity=opts.get(CONF_STATE_ENTITY) or None,
         )
         await levels.async_load()
 

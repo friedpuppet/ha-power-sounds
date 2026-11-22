@@ -203,3 +203,26 @@ async def test_no_time_left_buttons_without_the_sensor(hass: HomeAssistant) -> N
     reg = er.async_get(hass)
     assert reg.async_get_entity_id("button", DOMAIN, f"{sub_id}_test_sound_soc_50")
     assert not reg.async_get_entity_id("button", DOMAIN, f"{sub_id}_test_sound_runtime_30")
+
+
+async def test_only_while_discharging_with_a_state_entity(hass: HomeAssistant) -> None:
+    state = "sensor.battery_state"
+    hass.states.async_set(SOC, "51")
+    hass.states.async_set(state, "idle")
+    levels: list[str] = []
+    tracker = LevelTracker(
+        hass, "e", soc_entity=SOC, runtime_entity=RUNTIME, on_level=levels.append, state_entity=state
+    )
+    await tracker.async_load()
+    tracker.async_start()
+    await step(hass, 49.9)  # an idle battery's charge jitters: nothing
+    assert levels == []
+    hass.states.async_set(state, "discharging")  # a real discharge starts below the level: said now
+    await hass.async_block_till_done()
+    assert levels == ["soc_50"]
+    await step(hass, 30, 100)
+    assert levels == ["soc_50", "runtime_120"]
+    hass.states.async_set(state, "charging")
+    await step(hass, 24)
+    assert levels == ["soc_50", "runtime_120"]
+    tracker.async_stop()
