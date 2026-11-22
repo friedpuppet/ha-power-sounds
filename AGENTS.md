@@ -7,13 +7,19 @@ logic (`passed`, re-arm, crossings) from its `battery.py`. README has the rules 
 
 ## Status
 
-- v0.1.0 written 2026-11-22, tests green (`uv run pytest`, PHCC pinned = HA 2026.8.3). Not published yet: waits for
-  the repo `friedpuppet/ha-power-sounds` (the user creates repos and adds them to the PAT
-  `~/.config/github/token-grid-load-shedding`).
-- Planned live entry: grid `binary_sensor.e_elektrika`, charge `sensor.vkhidna_zona_deye_inverter_battery`, time left
-  `sensor.monitor_batarei_time_left` (battery_monitor); player subentry `media_player.vlc_telnet` with
-  grid_load_shedding's «VLC-TELNET» settings (files, volumes, window 11:00–22:00). Enable it and disable
-  grid_load_shedding's announcement subentry in the same step: never two sound sources at once.
+- **v0.1.0 released and live 2026-11-22.** Repo **[friedpuppet/ha-power-sounds](https://github.com/friedpuppet/ha-power-sounds)**
+  (public, created by the user), pushed and released with the PAT `~/.config/github/token-grid-load-shedding`
+  (same push command as `../battery-monitor/AGENTS.md`). Marketplace repo id **`1467926077`**; first install needed
+  no restart, updates do (WS `marketplace/repository/install`).
+- Live entry **«Звуки»** `01M82DHM37NWYZ4651FRTXRJ5C`: grid `binary_sensor.e_elektrika`, charge
+  `sensor.vkhidna_zona_deye_inverter_battery`, time left `sensor.monitor_batarei_time_left` (battery_monitor). Player
+  subentry `media_player.vlc_telnet` with grid_load_shedding's «VLC-TELNET» settings: grid_lost_ostap_6.mp3 /
+  grid_restored_polina_8.mp3 at 80 %, battery_soc_50/25 and battery_runtime_120/30 (`_ostap.mp3`) at 60 %, window
+  11:00–22:00 (the old subentry's leftover `sound_runtime_60` / `_10` were not copied: no such levels since v0.6.0).
+  Switched over 2026-11-22 22:01 Kyiv: grid_load_shedding's `switch.vitalnia_vlc_telnet_sound_notifications` off,
+  this one's `switch.vitalnia_vlc_telnet_sound_notifications_2` on. The new entities carry a `_2` suffix until
+  grid_load_shedding's are removed (plan step 4); rename them then. First start took `soc_50` as passed (SOC 40 %).
+  Not yet heard: a test button or a real event (switched over after the window closed).
 - Same conventions as `../grid-load-shedding/`. The brand icon is a copy of grid_load_shedding's for now.
 
 ## Differences from grid_load_shedding's sounds (on purpose)
