@@ -17,8 +17,8 @@ logic (`passed`, re-arm, crossings) from its `battery.py`. README has the rules 
   grid_restored_polina_8.mp3 at 80 %, battery_soc_50/25 and battery_runtime_120/30 (`_ostap.mp3`) at 60 %, window
   11:00–22:00 (the old subentry's leftover `sound_runtime_60` / `_10` were not copied: no such levels since v0.6.0).
   Switched over 2026-11-22 22:01 Kyiv: grid_load_shedding's `switch.vitalnia_vlc_telnet_sound_notifications` off,
-  this one's `switch.vitalnia_vlc_telnet_sound_notifications_2` on. The new entities carry a `_2` suffix until
-  grid_load_shedding's are removed (plan step 4); rename them then. First start took `soc_50` as passed (SOC 40 %).
+  this one's switch on. Since grid_load_shedding v0.12.0 removed its own (same day) the entities are renamed to the
+  old ids: `switch.vitalnia_vlc_telnet_sound_notifications`, `button.vitalnia_vlc_telnet_test_sound_*`. First start took `soc_50` as passed (SOC 40 %).
   Not yet heard: a test button or a real event (switched over after the window closed).
 - v0.1.1 (2026-11-22, the user's question «why not the monitor's state?»): optional Battery state entity; live
   `sensor.monitor_batarei_state`, so the levels count only while discharging.
